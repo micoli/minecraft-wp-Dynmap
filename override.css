@@ -1,0 +1,51 @@
+/*******************
+ * This is the over-ride CSS file.
+ *
+ * if you know any CSS you can easily add custom rules to change how DynMap
+ * looks and behaves under your DynMap installation.
+ *
+ * 1. Uncomment the override.css in the index.html.
+ * 2. Rename this file or create a new override.css.
+ * 3. Add your own rules (or steal these) to personalize how DynMap looks.
+ *
+ * By adding your own rules here, you can then save your changes 
+ * between DynMap updates and they won't get over-written.
+ */
+
+
+/* Use the alternate compass image */
+/*
+.compass {
+	top: 20px;
+	right: 20px;
+	height: 50px;
+	width: 50px;
+	background-image: url(web/images/compass_alt.png);
+}*/
+
+.dynmap .sidebar {
+	margin-right	: -75px;
+}
+
+.dynmap .sidebar .hitbar,
+.dynmap .sidebar .panel > .pin {
+	/*display: none;*/
+}
+.dynmap .coord-control .coord-control-value{
+	font-size		: 10pt;
+	font-weight		: normal;
+}
+.dynmap .coord-control .coord-control-label{
+	display			: none;
+}
+.dynmap .coord-control br{
+	display			: none;
+}
+
+.dynmap_container{
+	margin-bottom	: 10px;
+	overflow		: hidden;
+	position		: relative;
+	box-shadow		: 8px 8px 5px #888;
+	border			: 1px solid #AAA;
+}
