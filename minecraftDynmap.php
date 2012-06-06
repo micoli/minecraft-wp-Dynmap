@@ -15,7 +15,7 @@ class minecraft_dynmap extends morg_wp_plugin{
 	var $jsonapi = null;
 
 	var $adminMenu = array(
-		"Minecraft Dynmap"=>array(
+		"MinecraftDynmap"=>array(
 			"page_title"=>"Minecraft Dynmap",
 			"menu_title"=>"Minecraft Dynmap",
 			"capability"=>'manage_options',
@@ -69,7 +69,6 @@ class minecraft_dynmap extends morg_wp_plugin{
 	}
 	
 	function wp_ajax_nopriv__minecraft_dynmap_fwd(){
-		define ('HOSTNAME', 'http://192.168.1.89:8123/');
 	
 		// Change these configuration options if needed, see above descriptions for info.
 		$enable_jsonp    = false;
@@ -79,7 +78,7 @@ class minecraft_dynmap extends morg_wp_plugin{
 		// ############################################################################
 	
 		$path = $_GET['path'];
-		$url = HOSTNAME.$path;
+		$url = get_option('morg_dm_dynmapurl').$path;
 	
 	
 		$ch = curl_init( $url );
@@ -130,23 +129,28 @@ class minecraft_dynmap extends morg_wp_plugin{
 	}
 	
 	function admin__main() {
-		if($_POST['morg_ah_hidden'] == 'Y') {
-			update_option('morg_ah_jsonapi_host'	, $_POST['morg_ah_jsonapi_host']);
-
+		if($_POST['morg_dm_hidden'] == 'Y') {
+			update_option('morg_dm_dynmapurl', $_POST['morg_dm_dynmapurl']);
+			update_option('morg_dm_url_root', $_POST['morg_dm_url_root']);
+			update_option('morg_dm_iframemode', $_POST['morg_dm_iframemode']);
 			print sprintf('<div class="updated"><p><strong>%s</strong></p></div>', __('Options saved.' ));
 		}
-		$morg_ah_jsonapi_host		= get_option('morg_ah_jsonapi_host'		,"127.0.0.1");
+		$morg_dm_dynmapurl		= get_option('morg_dm_dynmapurl'		,"http://127.0.0.1:8123");
+		$morg_dm_url_root		= get_option('morg_dm_url_root'			,"http://127.0.0.1:8123");
+		$morg_dm_iframemode		= get_option('morg_dm_iframemode'		,"1");
 		
 		$form = "
 				<div class=\"wrap\">
-				<h2>" . __( 'MineCraft Auction House', 'morg_ah_trdom' ) . "</h2>
-				<form name=\"morg_ah_form\" method=\"post\" action=\"".str_replace( '%7E', '~', $_SERVER['REQUEST_URI']) ."\">
-				<input type=\"hidden\" name=\"morg_ah_hidden\" value=\"Y\">
+				<h2>" . __( 'MineCraft Dynmap', 'morg_dm_trdom' ) . "</h2>
+				<form name=\"morg_dm_form\" method=\"post\" action=\"".str_replace( '%7E', '~', $_SERVER['REQUEST_URI']) ."\">
+				<input type=\"hidden\" name=\"morg_dm_hidden\" value=\"Y\">
 				<h4>" . __( 'Settings', 'morg_wi_trdom' ) . "</h4>
-				<p>". __("JsonApi server: "		)."<input type=\"text\" name=\"morg_ah_jsonapi_host\"		value=\""	.$morg_ah_jsonapi_host		."\" size=\"90\">". __(" ex: /var/www/....") ."</p>
+				<p>". __("Dynmap Url: "		)."<input type=\"text\" name=\"morg_dm_dynmapurl\" 	value=\""	.$morg_dm_dynmapurl		."\" size=\"90\">". __(" ex: http://127.0.0.1:8123") ."</p>
+				<p>". __("Dynmap url root: ")."<input type=\"text\" name=\"morg_dm_url_root\" 	value=\""	.$morg_dm_url_root		."\" size=\"90\">". __(" ex: http://127.0.0.1:8123") ."</p>
+				<p>". __("iframemode: "		)."<input type=\"text\" name=\"morg_dm_iframemode\" value=\""	.$morg_dm_iframemode	."\" size=\"10\">". __(" ex: 1|0") ."</p>
 				<hr />
 				<p class=\"submit\">
-					<input type=\"submit\" name=\"Submit\" value=\"". __('Update Options', 'morg_ah_trdom' ) ."\" />
+					<input type=\"submit\" name=\"Submit\" value=\"". __('Update Options', 'morg_dm_trdom' ) ."\" />
 				</p>
 				</form>
 			</div>";
@@ -157,6 +161,8 @@ class minecraft_dynmap extends morg_wp_plugin{
 		global $wp;
 		$prms =shortcode_atts(array(
 			'uid'				=>'mcmap'.date('dHisu'),
+			'mode'				=>get_option('morg_dm_iframemode')?'iframe':'div',
+			'dynmapurl'			=>get_option('morg_dm_dynmapurl'),
 			'width'				=>'840px',
 			'height'			=>'600px',
 			'world'				=>'world',
@@ -183,7 +189,8 @@ class minecraft_dynmap extends morg_wp_plugin{
 		);
 		switch ($dm_mode){
 			case 'main';
-				$data['scripturlRoot']='/wp/wp-content/plugins/minecraft-wp-Dynmap/web';
+				$data['scripturlRoot']='/wp-content/plugins/minecraft-wp-Dynmap/web';
+				$data['siteUrl']=site_url();
 				$template='templates/dynmap_map.tpl';
 			break;
 		}

@@ -316,6 +316,7 @@ DynMap.prototype = {
 			.appendTo(panel);
 		
 		var updateHeight = function() {
+			if(!worldlist.scrollHeight) return;
 			if(sidebar.innerHeight() > (2*worldlist.scrollHeight())) { /* Big enough */
 				worldlist.height(worldlist.scrollHeight());
 				upbtn_world.toggle(false);

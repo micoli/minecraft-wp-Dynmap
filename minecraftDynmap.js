@@ -1,9 +1,10 @@
-$.fn.equals = function(compareTo) {
-	if (!compareTo || this.length != compareTo.length) {
+var objectEquals = function(compareFrom,compareTo) {
+	if(!compareFrom) return false;
+	if (!compareTo || compareFrom.length != compareTo.length) {
 		return false;
 	}
-	for (var i = 0; i < this.length; ++i) {
-		if (this[i] !== compareTo[i]) {
+	for (var i = 0; i < compareFrom.length; ++i) {
+		if (compareFrom[i] !== compareTo[i]) {
 			return false;
 		}
 	}
@@ -51,7 +52,7 @@ componentconstructors['minecraft-wp']= function(dynmap, configuration) {
 	var clickOnMapLinkCallback = function(){
 		var coord = {};
 		eval("coord="+$(this).attr('rel'));
-		if(coord.x !=undefined && (coord.container==undefined || (coord.container!=undefined && dynmap.options.container.equals($(coord.container))))){
+		if(coord.x !=undefined && (coord.container==undefined || (coord.container!=undefined && objectEquals(dynmap.options.container,$(coord.container))))){
 			dynmap.panToLocation(coord);
 			if(coord.zoom != undefined){
 				dynmap.map.setZoom(coord.zoom);	
@@ -76,3 +77,16 @@ componentconstructors['minecraft-wp']= function(dynmap, configuration) {
 	$(dynmap).bind('playerupdated', function() { console.log('playerupdated'); });
 	*/
 };
+jQuery(document).ready(function($) {
+	var clickOnMapLinkCallback = function(){
+		var coord = {};
+		eval("coord="+$(this).attr('rel'));
+		if($('#dynmap_iframe_mode_iframe').length>0){
+			var $iframe = $('#'+$('#dynmap_iframe_mode_iframe').html());
+			var newUrl = $('#dynmap_iframe_mode_iframe').attr('rel')+'&x='+coord.x+'&z='+coord.z+'&y='+coord.y+'&worldname='+coord.world+'&mapname='+coord.map+'&zoom='+coord.zoom;
+			$iframe.attr('src',newUrl);
+		}
+		return false;
+	}
+	$('a.dynmapcoord').click(clickOnMapLinkCallback);
+});
